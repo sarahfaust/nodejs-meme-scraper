@@ -1,30 +1,44 @@
 const got = require('got');
 const cheerio = require('cheerio');
 const filesystem = require('node:fs');
+
 const directory = './memes';
+const URL = 'https://memegen-link-examples-upleveled.netlify.app/';
+
+const topText = process.argv[2];
+const bottomText = process.argv[3];
+const memeImage = process.argv[4];
 
 const downloadImage = async (index, imageLink) => {
   try {
     const fileName = `${directory}/img-${index}.jpg`;
+
+    // use got to create stream (instead of saving respose)
     const downloadStream = got.stream(imageLink);
     const fileWriterStream = filesystem.createWriteStream(fileName);
     downloadStream.pipe(fileWriterStream);
-    /*     // get image and fave it to response
-    const response = await got(imageLink);
-    // image will be stored at this path
-    const path = `${directory}/img-${index}.jpg`;
-    const filePath = filesystem.createWriteStream(path);
-    response.pipe(filePath);
-    filePath.on('finish', () => {
-      filePath.close();
-      console.log('file downloaded');
-    }); */
   } catch (error) {
     console.log(error.response.body);
   }
 };
 
-const extractLinks = async (url) => {
+const getCustomImage = async (top, bottom, image) => {
+  try {
+    const fileName = `${directory}/img-${top}-${bottom}-${image}.jpg`;
+    const imageLink = `https://api.memegen.link/images/${memeImage}/${topText}/${bottomText}.jpg`;
+
+    console.log(imageLink);
+
+    // use got to create stream (instead of saving response)
+    const downloadStream = got.stream(imageLink);
+    const fileWriterStream = filesystem.createWriteStream(fileName);
+    downloadStream.pipe(fileWriterStream);
+  } catch (error) {
+    console.log(error.response.body);
+  }
+};
+
+const getRandomImages = async (url) => {
   try {
     // fetch HTML
     const response = await got(url);
@@ -50,5 +64,8 @@ const extractLinks = async (url) => {
   }
 };
 
-const URL = 'https://memegen-link-examples-upleveled.netlify.app/';
-extractLinks(URL);
+if (topText && bottomText && memeImage) {
+  getCustomImage(topText, bottomText, memeImage);
+} else {
+  getRandomImages(URL);
+}
