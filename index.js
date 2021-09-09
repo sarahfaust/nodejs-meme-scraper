@@ -25,7 +25,7 @@ const downloadImage = async (index, imageLink) => {
 const getCustomImage = async (top, bottom, image) => {
   try {
     const fileName = `${directory}/img-${top}-${bottom}-${image}.jpg`;
-    const imageLink = `https://api.memegen.link/images/${memeImage}/${topText}/${bottomText}.jpg`;
+    const imageLink = `https://api.memegen.link/images/${image}/${top}/${bottom}.jpg`;
 
     console.log(imageLink);
 
