@@ -38,6 +38,12 @@ const getCustomImage = async (top, bottom, image) => {
   }
 };
 
+const writeToConsole = (message) => {
+  process.stdout.clearLine();
+  process.stdout.cursorTo(0);
+  process.stdout.write(message);
+};
+
 const getRandomImages = async (url) => {
   try {
     // fetch HTML
@@ -55,9 +61,33 @@ const getRandomImages = async (url) => {
       links.push($(element).attr('src'));
     });
 
-    // loop through array
+    // define variables for progress bar
+    let percent = 0;
+    let progressBar = '';
+    let waitBar = '';
+
+    for (let i = 0; i < 50; i++) {
+      waitBar = waitBar.concat('-');
+    }
+
+    // log initial progress bar
+    process.stdout.write(
+      `Downloading images: |${progressBar}${waitBar}| ${percent}%`,
+    );
+
+    // loop through link array
     for (let i = 0; i < 10; i++) {
       downloadImage(i, links[i]);
+
+      // track progress
+      const progress = '#####';
+      progressBar = progressBar.concat(progress);
+      waitBar = waitBar.slice(5);
+      percent = (i + 1) * 10;
+      const consoleMessage = `Downloading images: |${progressBar}${waitBar}| ${percent}%`;
+
+      // clear sdtout and print current message
+      setTimeout(() => writeToConsole(consoleMessage), 500 * i);
     }
   } catch (error) {
     console.log(error.response.body);
